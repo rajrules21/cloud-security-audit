@@ -6,8 +6,10 @@ for the two-part Azure (audit_azure.py) and Entra ID / M365 (audit_entra.py) aud
 
 from __future__ import annotations
 
+import base64
 import csv
 import datetime as dt
+import json
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -87,9 +89,18 @@ class AuditContext:
 class AzureClients:
     """Thin, resilient REST client for ARM, Resource Graph, and Microsoft Graph."""
 
-    def __init__(self, tenant_id: Optional[str] = None, interactive: bool = False) -> None:
+    def __init__(
+        self,
+        tenant_id: Optional[str] = None,
+        interactive: bool = False,
+        login_hint: Optional[str] = None,
+    ) -> None:
         if interactive:
-            kwargs = {"tenant_id": tenant_id} if tenant_id else {}
+            kwargs: Dict[str, Any] = {}
+            if tenant_id:
+                kwargs["tenant_id"] = tenant_id
+            if login_hint:
+                kwargs["login_hint"] = login_hint
             self.credential = InteractiveBrowserCredential(**kwargs)
         else:
             kwargs = {"exclude_interactive_browser_credential": True}
@@ -99,6 +110,21 @@ class AzureClients:
 
         self.session = requests.Session()
         self._tokens: Dict[str, Tuple[str, float]] = {}
+        self._logged_identity: set[str] = set()
+
+    def _log_token_identity(self, scope: str, jwt_token: str) -> None:
+        if scope in self._logged_identity:
+            return
+        self._logged_identity.add(scope)
+        try:
+            payload_b64 = jwt_token.split(".")[1]
+            payload_b64 += "=" * (-len(payload_b64) % 4)
+            claims = json.loads(base64.urlsafe_b64decode(payload_b64).decode("utf-8"))
+            who = claims.get("upn") or claims.get("preferred_username") or claims.get("unique_name") or claims.get("appid") or "unknown"
+            tid = claims.get("tid", "unknown")
+            log(f"Authenticated for {scope.split('/')[2]} as: {who} (Tenant: {tid})")
+        except Exception:
+            pass
 
     def _get_token(self, scope: str) -> str:
         cached = self._tokens.get(scope)
@@ -106,6 +132,7 @@ class AzureClients:
             return cached[0]
         token = self.credential.get_token(scope)
         self._tokens[scope] = (token.token, float(token.expires_on))
+        self._log_token_identity(scope, token.token)
         return token.token
 
     def request(

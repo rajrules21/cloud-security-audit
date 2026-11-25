@@ -488,6 +488,7 @@ def main() -> int:
     parser.add_argument("--subscription", nargs="*", help="Optional subscription IDs to audit (default: all)")
     parser.add_argument("--tenant-id", help="Optional Azure tenant ID")
     parser.add_argument("--interactive", action="store_true", help="Use interactive browser sign-in")
+    parser.add_argument("--login-hint", help="Pre-fill a specific account email for interactive sign-in")
     args = parser.parse_args()
 
     out_dir = Path(args.output_dir)
@@ -496,7 +497,7 @@ def main() -> int:
 
     ctx = AuditContext(output_dir=out_dir, csv_dir=csv_dir, days=args.days, stale_days=args.stale_days)
     log(f"Starting Part 1 (Azure Audit) -> {out_dir}")
-    clients = AzureClients(tenant_id=args.tenant_id, interactive=args.interactive)
+    clients = AzureClients(tenant_id=args.tenant_id, interactive=args.interactive, login_hint=args.login_hint)
 
     subs = collect_subscriptions(clients, ctx, args.subscription)
     sub_ids = [s["subscriptionId"] for s in subs]

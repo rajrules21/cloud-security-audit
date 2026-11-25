@@ -46,6 +46,7 @@ def main() -> int:
     parser.add_argument("--stale-days", type=int, default=60, help="Stale threshold in days (default: 60)")
     parser.add_argument("--tenant-id", help="Optional Entra ID tenant ID")
     parser.add_argument("--interactive", action="store_true", help="Use interactive browser sign-in")
+    parser.add_argument("--login-hint", help="Pre-fill your M365/Entra account email for interactive sign-in")
     parser.add_argument("--max-signin-pages", type=int, default=20, help="Max Entra sign-in log pages to fetch (default: 20)")
     args = parser.parse_args()
 
@@ -55,7 +56,7 @@ def main() -> int:
 
     ctx = AuditContext(output_dir=out_dir, csv_dir=csv_dir, days=args.days, stale_days=args.stale_days)
     log(f"Starting Part 2 (Entra ID / M365 Audit) -> {out_dir}")
-    clients = AzureClients(tenant_id=args.tenant_id, interactive=args.interactive)
+    clients = AzureClients(tenant_id=args.tenant_id, interactive=args.interactive, login_hint=args.login_hint)
 
     # 1. Users & Soft-Deleted Users
     log("Collecting Entra ID users and soft-deleted users...")
