@@ -1,0 +1,17 @@
+# Audit outputs & sensitive tenant data
+audit_output/
+audit_output_*/
+*.csv
+*.md.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Secrets / environment
+.env
+.env.*
