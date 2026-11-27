@@ -1,7 +1,11 @@
-# GCP Security & Identity Audit Module (Planned)
+# GCP Security Audit
 
-Planned read-only collectors using `google-cloud-*` SDKs to mirror the Azure module's CSV + Markdown output format:
+Strictly read-only GCP security audit using Application Default Credentials (`gcloud auth application-default login`), exporting CSVs and `SECURITY_AUDIT_REPORT.md` (no JSON).
 
-- **IAM & Service Account Hygiene**: Over-privileged `Owner`/`Editor` bindings, external/personal Gmail accounts in IAM, unused service accounts, and user-managed service account keys.
-- **Cloud Audit Logs Correlation**: Cross-reference IAM policy bindings against 90-day Admin Activity & Data Access logs.
-- **Resource & Network Posture**: Publicly exposed GCS buckets, VPC firewall rules allowing `0.0.0.0/0` on sensitive ports, Cloud SQL public IPs, and Security Command Center (SCC) findings.
+```powershell
+pip install -r requirements.txt
+gcloud auth application-default login
+python audit_gcp_security.py
+# Or audit specific projects:
+python audit_gcp_security.py --project my-prod-project my-dev-project
+```

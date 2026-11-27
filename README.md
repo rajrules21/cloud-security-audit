@@ -29,8 +29,8 @@ flowchart LR
 | Cloud / Identity Provider | Status | Scope Covered |
 | :--- | :--- | :--- |
 | **Microsoft Azure & Entra ID** | **Implemented** ([`azure/`](./azure)) | RBAC vs. Entra ID (orphaned, disabled, soft-deleted, guest, inactive, and group-inherited roles), 90-day Activity Log usage correlation, Enterprise App & App Registration usage + active user names + secret/cert expiry, MFA registration, Directory Roles, Conditional Access, Key Vault, Storage, NSGs/Public IPs, Databases, App Services, ACR/AKS, Defender for Cloud Secure Score & Diagnostic Logs |
-| **Amazon Web Services (AWS)** | **Planned** ([`aws/`](./aws)) | IAM Users/Roles/Policies, Access Analyzer, CloudTrail last-used correlation, S3 public access, Security Groups, KMS, GuardDuty & Security Hub |
-| **Google Cloud Platform (GCP)** | **Planned** ([`gcp/`](./gcp)) | Cloud IAM bindings vs. Cloud Identity, Cloud Audit Logs activity correlation, GCS bucket exposure, Firewall rules, KMS & Security Command Center |
+| **Amazon Web Services (AWS)** | **Implemented** ([`aws/`](./aws)) | IAM Users/MFA/Access Keys & unused key detection, Unused/Admin IAM Roles (`RoleLastUsed`) & wildcard trust policies, S3 public access/encryption/versioning, VPC Security Groups (`0.0.0.0/0`) & Elastic IPs, EC2 IMDSv2, EBS/RDS encryption, KMS rotation, CloudTrail & GuardDuty |
+| **Google Cloud Platform (GCP)** | **Implemented** ([`gcp/`](./gcp)) | Project IAM bindings (`Owner`/`Editor`, `allUsers`, personal emails, deleted principals), Service Account user-managed keys, Cloud Audit Logs activity correlation, GCS public access & Cloud SQL posture, VPC Firewalls (`0.0.0.0/0`), Compute VM exposure & Cloud Logging Sinks |
 
 ---
 
